@@ -98,7 +98,7 @@ A comprehensive parking management solution with RFID/QR code integration, mobil
 ### 1. Clone Repository
 ```bash
 git clone <repository-url>
-cd "Parking System"
+cd "Parking-System-v1.0"
 ```
 
 ### 2. Database Setup
@@ -555,15 +555,18 @@ npm install
 ```
 Controller:
   Username: controller
-  Password: [set in database]
+  Password: controller123
 
 Accountant:
   Username: accountant
-  Password: [set in database]
+  Password: accountant123
 
 Admin:
   Username: admin
-  Password: [set in database]
+  Password: admin123
+Rfid:
+  Username: Rfid_registrar
+  Password: rfid123
 ```
 
 ### Customer Accounts
@@ -590,5 +593,5 @@ For issues or questions:
 ---
 
 **Version**: 1.0  
-**Last Updated**: December 7, 2025  
+**Last Updated**: january 12, 2026  
 **License**: Proprietary
