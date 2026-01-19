@@ -1,0 +1,24 @@
+# Additional Requirements for Hardware Integration
+# Install these only if using RFID/PLC/Serial hardware
+# pip install -r requirements_hardware.txt
+
+# PLC Communication (Modbus TCP/IP)
+pymodbus==3.7.4
+
+# Camera RTSP Streaming (already in main requirements.txt)
+# opencv-python==4.10.0.84
+
+# Serial Communication (Modbus RTU via RS-485)
+pyserial==3.5
+
+# RFID Reader Support
+pyscard==2.1.1
+
+# Optional: For OPC UA protocol (alternative to Modbus)
+# opcua==0.98.13
+
+# GPIO Control (for Raspberry Pi gate control)
+# RPi.GPIO==0.7.1
+
+# Note: Install these only if you have the physical hardware
+# Most parking systems work without these dependencies

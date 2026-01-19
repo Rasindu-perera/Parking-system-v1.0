@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Parking</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        .app-container { 
+            max-width: 480px; 
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #f8f9fa;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+        }
+        /* Header Styles */
+        .app-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .app-header img {
+            height: 80px;
+            margin-bottom: 10px;
+            filter: brightness(0) invert(1);
+        }
+        .app-header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .app-header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 5px 0 0 0;
+        }
+        
+        /* Card Styles */
+        .card {
+            background: white;
+            border-radius: 16px;
+            margin: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: none;
+            overflow: hidden;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        h2 { 
+            color: #1e293b; 
+            margin-bottom: 20px; 
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        /* Form Styles */
+        .form-control, .form-select {
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 14px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Button Styles */
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            transition: all 0.3s ease;
+            text-transform: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .btn-secondary {
+            background: #64748b;
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        /* Spot Card Styles */
+        .spot-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .spot-card:hover {
+            transform: translateX(4px);
+            border-color: #667eea;
+        }
+        .spot-type { 
+            font-size: 20px; 
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .spot-count { 
+            font-size: 14px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+            font-weight: 600;
+        }
+        .spot-count.low { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); 
+            color: #92400e; 
+        }
+        .spot-count.full { 
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); 
+            color: #991b1b; 
+        }
+        /* QR Display Styles */
+        .qr-display {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .qr-display img {
+            max-width: 100%;
+            height: auto;
+            border: 4px solid #667eea;
+            border-radius: 16px;
+            padding: 10px;
+            background: white;
+        }
+        
+        /* Timer Styles */
+        .timer {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .timer.warning { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .timer.danger { 
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            padding: 16px;
+            margin: 15px;
+        }
+        .success { color: #16a34a; font-weight: 600; }
+        .error { color: #dc2626; font-weight: 600; }
+        .hidden { display: none; }
+        
+        /* Vehicle Grid */
+        .vehicle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .vehicle-btn {
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 3px solid #e2e8f0;
+            border-radius: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .vehicle-btn:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+        }
+        .vehicle-btn.selected {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        .vehicle-emoji { 
+            font-size: 36px;
+            margin-bottom: 8px;
+        }
+        .vehicle-name { 
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+        }
+        .info-box.warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left-color: #f59e0b;
+        }
+        
+        /* Spot Label Badge */
+        .spot-badge {
+            font-size: 56px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin: 20px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- App Header -->
+        <div class="app-header">
+            <h1>Smart Parking</h1>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="card">
+            <div class="card-body">
+                <h2><i class="bi bi-person-circle"></i> Login</h2>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="loginUsername" placeholder="Username">
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+                </div>
+                <button class="btn btn-primary w-100 mb-2" onclick="login()">
+                    <i class="bi bi-box-arrow-in-right"></i> Login
+                </button>
+                <button class="btn btn-secondary w-100" onclick="showRegister()">
+                    <i class="bi bi-person-plus"></i> Register
+                </button>
+            </div>
+        </div>
+
+        <!-- Register Screen -->
+        <div id="registerScreen" class="card hidden">
+            <div class="card-body">
+                <h2><i class="bi bi-person-plus-fill"></i> Create Account</h2>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="regFullName" placeholder="Full Name">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="regUsername" placeholder="Username">
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" id="regEmail" placeholder="Email">
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="regPhone" placeholder="Phone">
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" id="regPassword" placeholder="Password">
+                </div>
+                <button class="btn btn-primary w-100 mb-2" onclick="register()">
+                    <i class="bi bi-check-circle"></i> Register
+                </button>
+                <button class="btn btn-secondary w-100" onclick="showLogin()">
+                    <i class="bi bi-arrow-left"></i> Back to Login
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboardScreen" class="card hidden">
+            <div class="card-body">
+                <h2><i class="bi bi-house-heart"></i> Welcome, <span id="userName"></span></h2>
+                <button class="btn btn-primary w-100 mb-2" onclick="loadAvailability()">
+                    <i class="bi bi-arrow-clockwise"></i> Refresh Availability
+                </button>
+                <button class="btn btn-danger w-100" onclick="logout()">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Availability -->
+        <div id="availabilityCard" class="card hidden">
+            <div class="card-body">
+                <h2><i class="bi bi-geo-alt"></i> Available Parking</h2>
+                <div id="availabilityList"></div>
+                <button class="btn btn-primary w-100 mt-3" onclick="showBooking()">
+                    <i class="bi bi-calendar-check"></i> Book Parking Spot
+                </button>
+            </div>
+        </div>
+
+        <!-- Booking Form -->
+        <div id="bookingScreen" class="card hidden">
+            <div class="card-body">
+                <h2><i class="bi bi-calendar-plus"></i> Book Parking</h2>
+                <div class="mb-3">
+                    <input type="text" class="form-control" id="plateNumber" placeholder="Plate Number (e.g., ABC-1234)" style="text-transform: uppercase;">
+                </div>
+                <p class="mb-3"><strong>Select Vehicle Type:</strong></p>
+                <div class="vehicle-grid mb-3">
+                    <div class="vehicle-btn" onclick="selectVehicle(1)">
+                        <div class="vehicle-emoji">🚗</div>
+                        <div class="vehicle-name">Car</div>
+                    </div>
+                    <div class="vehicle-btn" onclick="selectVehicle(2)">
+                        <div class="vehicle-emoji">🏍️</div>
+                        <div class="vehicle-name">Motorbike</div>
+                    </div>
+                    <div class="vehicle-btn" onclick="selectVehicle(3)">
+                        <div class="vehicle-emoji">🚚</div>
+                        <div class="vehicle-name">Heavy</div>
+                    </div>
+                    <div class="vehicle-btn" onclick="selectVehicle(4)">
+                        <div class="vehicle-emoji">🚐</div>
+                        <div class="vehicle-name">Van</div>
+                    </div>
+                </div>
+                <div class="info-box warning mb-3">
+                    <small><i class="bi bi-exclamation-triangle"></i> <strong>Note:</strong> Booking valid for 15 minutes only</small>
+                </div>
+                <button class="btn btn-success w-100 mb-2" onclick="createBooking()">
+                    <i class="bi bi-check-circle"></i> Create Booking
+                </button>
+                <button class="btn btn-secondary w-100" onclick="backToDashboard()">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
+            </div>
+        </div>
+
+        <!-- QR Code Display -->
+        <div id="qrScreen" class="card hidden">
+            <div class="card-body">
+                <h2><i class="bi bi-ticket-perforated"></i> Your Booking</h2>
+                <div class="spot-badge">
+                    <span id="spotLabel"></span>
+                </div>
+                <div class="timer" id="timerDisplay">15:00</div>
+                <div class="qr-display mb-3">
+                    <img id="qrImage" src="" alt="QR Code" class="img-fluid">
+                </div>
+                <div class="text-center mb-3">
+                    <strong><i class="bi bi-car-front"></i> Plate:</strong> 
+                    <span id="bookingPlate" class="badge bg-primary"></span>
+                </div>
+                <div class="info-box mb-3">
+                    <small><i class="bi bi-info-circle"></i> <strong>Auto Check-In:</strong> Your booking will be automatically checked in when the gate scanner detects your QR code or plate number.</small>
+                </div>
+                <div id="waitingButtons">
+                    <button class="btn btn-success w-100 mb-2" onclick="manualCheckIn()">
+                        <i class="bi bi-check-circle"></i> I've Entered Parking
+                    </button>
+                    <button class="btn btn-danger w-100" onclick="cancelBooking()">
+                        <i class="bi bi-x-circle"></i> Cancel Booking
+                    </button>
+                </div>
+                <div id="enteredButtons" class="hidden">
+                    <button class="btn btn-primary w-100" onclick="confirmEntry()">
+                        <i class="bi bi-check-circle-fill"></i> Entry Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="message" class="card hidden"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://192.168.43.184:8002/mobile';
+        let token = localStorage.getItem('token') || null;
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let selectedVehicleType = null;
+        let currentBooking = JSON.parse(localStorage.getItem('currentBooking') || 'null');
+        let timerInterval = null;
+        let entryCheckInterval = null;
+
+        // Auto-login on page load if token exists
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (token && currentUser) {
+                console.log('Auto-logging in user:', currentUser.username);
+                showDashboard();
+                
+                // Check if there's an active booking
+                if (currentBooking) {
+                    await checkActiveBooking();
+                }
+            }
+        });
+
+        async function checkActiveBooking() {
+            try {
+                const res = await fetch(`${API_URL}/check-entry/${currentBooking.id}`);
+                const data = await res.json();
+                
+                // Check if booking is still valid (not expired, not cancelled)
+                const expiresAt = new Date(currentBooking.expires_at);
+                const now = new Date();
+                
+                if (data.has_entered) {
+                    // Already entered - show entered state
+                    showQRScreen();
+                    const timer = document.getElementById('timerDisplay');
+                    timer.textContent = '✓ ENTERED';
+                    timer.className = 'timer success';
+                    timer.style.color = '#16a34a';
+                    
+                    // Show entry confirm button instead of waiting buttons
+                    document.getElementById('waitingButtons').classList.add('hidden');
+                    document.getElementById('enteredButtons').classList.remove('hidden');
+                    
+                    showMessage('✓ You are currently parked', false);
+                } else if (now < expiresAt) {
+                    // Still valid - resume booking screen with timer
+                    console.log('Resuming active booking:', currentBooking.id);
+                    showQRScreen();
+                } else {
+                    // Expired - clear booking
+                    console.log('Booking expired, clearing...');
+                    currentBooking = null;
+                    localStorage.removeItem('currentBooking');
+                }
+            } catch (err) {
+                console.error('Error checking active booking:', err);
+                // Clear invalid booking
+                currentBooking = null;
+                localStorage.removeItem('currentBooking');
+            }
+        }
+
+        function showMessage(msg, isError = false) {
+            const msgEl = document.getElementById('message');
+            msgEl.textContent = msg;
+            msgEl.className = 'card ' + (isError ? 'error' : 'success');
+            msgEl.classList.remove('hidden');
+            setTimeout(() => msgEl.classList.add('hidden'), 3000);
+        }
+
+        function showRegister() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        async function register() {
+            const data = {
+                username: document.getElementById('regUsername').value,
+                email: document.getElementById('regEmail').value,
+                password: document.getElementById('regPassword').value,
+                full_name: document.getElementById('regFullName').value,
+                phone: document.getElementById('regPhone').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    showMessage('Account created! Please login.');
+                    showLogin();
+                } else {
+                    showMessage(result.detail || 'Registration failed', true);
+                }
+            } catch (err) {
+                showMessage('Cannot connect to server. Make sure backend is running on port 8002.', true);
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const res = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    token = result.token;
+                    currentUser = { id: result.user_id, username: result.username };
+                    
+                    // Save to localStorage for persistent login
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    
+                    showDashboard();
+                } else {
+                    showMessage(result.detail || 'Login failed', true);
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                showMessage('Cannot connect to server. Make sure backend is running on port 8002.', true);
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.username;
+            loadAvailability();
+        }
+
+        async function loadAvailability() {
+            try {
+                const res = await fetch(`${API_URL}/availability`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+                }
+                
+                const data = await res.json();
+                console.log('Availability data:', data);
+                
+                const vehicleTypes = data.vehicle_types || [];
+                
+                const list = document.getElementById('availabilityList');
+                list.innerHTML = vehicleTypes.map(item => {
+                    const pct = (item.available_spots / item.total_spots) * 100;
+                    const statusClass = pct === 0 ? 'full' : pct <= 30 ? 'low' : '';
+                    return `
+                        <div class="spot-card">
+                            <div>
+                                <span class="spot-type">${getVehicleEmoji(item.type_id)} ${item.type_name}</span>
+                            </div>
+                            <span class="spot-count ${statusClass}">${item.available_spots}/${item.total_spots}</span>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('availabilityCard').classList.remove('hidden');
+            } catch (err) {
+                console.error('Availability error:', err);
+                showMessage('Failed to load availability: ' + err.message, true);
+            }
+        }
+
+        function getVehicleEmoji(id) {
+            const emojis = {1: '🚗', 2: '🏍️', 3: '🚚', 4: '🚐'};
+            return emojis[id] || '🚗';
+        }
+
+        function getVehicleName(id) {
+            const names = {1: 'Car', 2: 'Motorbike', 3: 'Heavy Vehicle', 4: 'Van'};
+            return names[id] || 'Vehicle';
+        }
+
+        function showBooking() {
+            document.getElementById('availabilityCard').classList.add('hidden');
+            document.getElementById('bookingScreen').classList.remove('hidden');
+        }
+
+        function selectVehicle(typeId) {
+            document.querySelectorAll('.vehicle-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.closest('.vehicle-btn').classList.add('selected');
+            selectedVehicleType = typeId;
+        }
+
+        async function createBooking() {
+            const plate = document.getElementById('plateNumber').value.toUpperCase();
+            if (!plate || !selectedVehicleType) {
+                showMessage('Please enter plate number and select vehicle type', true);
+                return;
+            }
+
+            console.log('Creating booking:', { plate, vehicle_type_id: selectedVehicleType, user_id: currentUser.id });
+
+            try {
+                const res = await fetch(`${API_URL}/bookings?user_id=${currentUser.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plate_number: plate,
+                        vehicle_type_id: selectedVehicleType,
+                        start_time: new Date().toISOString()
+                    })
+                });
+                const booking = await res.json();
+                console.log('Booking response:', booking);
+                if (res.ok) {
+                    currentBooking = booking;
+                    
+                    // Save booking to localStorage
+                    localStorage.setItem('currentBooking', JSON.stringify(booking));
+                    
+                    showQRScreen();
+                } else {
+                    showMessage(booking.detail || 'Booking failed', true);
+                }
+            } catch (err) {
+                console.error('Booking error:', err);
+                showMessage('Failed to create booking: ' + err.message, true);
+            }
+        }
+
+        function showQRScreen() {
+            document.getElementById('bookingScreen').classList.add('hidden');
+            document.getElementById('qrScreen').classList.remove('hidden');
+            document.getElementById('spotLabel').textContent = currentBooking.spot_label;
+            document.getElementById('bookingPlate').textContent = currentBooking.plate_number;
+            document.getElementById('qrImage').src = 'data:image/png;base64,' + currentBooking.qr_code;
+            
+            // Reset button visibility to default state (waiting)
+            document.getElementById('waitingButtons').classList.remove('hidden');
+            document.getElementById('enteredButtons').classList.add('hidden');
+            
+            startTimer();
+        }
+
+        function startTimer() {
+            const expiresAt = new Date(currentBooking.expires_at);
+            
+            if (timerInterval) clearInterval(timerInterval);
+            if (entryCheckInterval) clearInterval(entryCheckInterval);
+            
+            // Start polling for entry status (check every 3 seconds)
+            entryCheckInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/check-entry/${currentBooking.id}`);
+                    const data = await response.json();
+                    
+                    if (data.has_entered) {
+                        // Customer has entered! Stop timer and show success
+                        clearInterval(timerInterval);
+                        clearInterval(entryCheckInterval);
+                        
+                        const timer = document.getElementById('timerDisplay');
+                        timer.textContent = '✓ ENTERED';
+                        timer.className = 'timer success';
+                        timer.style.color = '#16a34a';
+                        
+                        // Show entry confirm button instead of waiting buttons
+                        document.getElementById('waitingButtons').classList.add('hidden');
+                        document.getElementById('enteredButtons').classList.remove('hidden');
+                        
+                        showMessage(data.message || '✓ You have entered the parking! Welcome.', false);
+                        
+                        // Stay on this screen so they can see their spot info
+                        return;
+                    }
+                } catch (err) {
+                    console.error('Entry check error:', err);
+                }
+            }, 3000);
+            
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = expiresAt - now;
+                
+                if (diff <= 0) {
+                    clearInterval(timerInterval);
+                    clearInterval(entryCheckInterval);
+                    document.getElementById('timerDisplay').textContent = 'EXPIRED';
+                    document.getElementById('timerDisplay').className = 'timer danger';
+                    showMessage('Booking expired and auto-cancelled', true);
+                    setTimeout(backToDashboard, 3000);
+                    return;
+                }
+                
+                const minutes = Math.floor(diff / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                
+                const timer = document.getElementById('timerDisplay');
+                timer.textContent = display;
+                
+                if (minutes < 5) {
+                    timer.className = 'timer danger';
+                } else if (minutes < 10) {
+                    timer.className = 'timer warning';
+                } else {
+                    timer.className = 'timer';
+                }
+            }, 1000);
+        }
+
+        async function manualCheckIn() {
+            if (!confirm('Have you entered the parking area?')) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBooking.id}/checkin`, {
+                    method: 'POST',
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plate_number: currentBooking.plate_number,
+                        qr_code: currentBooking.id
+                    })
+                });
+                
+                const data = await res.json();
+                console.log('Check-in response:', data);
+                
+                if (res.ok) {
+                    // Stop timers
+                    clearInterval(timerInterval);
+                    if (entryCheckInterval) clearInterval(entryCheckInterval);
+                    
+                    // Update UI to show entered
+                    const timer = document.getElementById('timerDisplay');
+                    timer.textContent = '✓ ENTERED';
+                    timer.className = 'timer success';
+                    timer.style.color = '#16a34a';
+                    
+                    showMessage('✓ Check-in successful! Welcome to the parking.', false);
+                    
+                    // Update booking in localStorage
+                    currentBooking.is_checked_in = true;
+                    localStorage.setItem('currentBooking', JSON.stringify(currentBooking));
+                    
+                    // Show entry confirm button instead of waiting buttons
+                    document.getElementById('waitingButtons').classList.add('hidden');
+                    document.getElementById('enteredButtons').classList.remove('hidden');
+                } else {
+                    showMessage(data.detail || 'Check-in failed', true);
+                }
+            } catch (err) {
+                console.error('Check-in error:', err);
+                showMessage('Check-in failed: ' + err.message, true);
+            }
+        }
+
+        async function cancelBooking() {
+            if (!confirm('Are you sure you want to cancel this booking?')) return;
+            
+            try {
+                const res = await fetch(`${API_URL}/bookings/${currentBooking.id}/cancel`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok) {
+                    clearInterval(timerInterval);
+                    if (entryCheckInterval) clearInterval(entryCheckInterval);
+                    
+                    // Clear booking from localStorage
+                    currentBooking = null;
+                    localStorage.removeItem('currentBooking');
+                    
+                    showMessage(data.message || 'Booking cancelled');
+                    backToDashboard();
+                } else {
+                    // Show the actual error message from the server
+                    showMessage(data.detail || 'Cancellation failed', true);
+                }
+            } catch (err) {
+                console.error('Cancel error:', err);
+                showMessage('Cancellation failed: ' + err.message, true);
+            }
+        }
+
+        function confirmEntry() {
+            // Show thank you message
+            showMessage('🎉 Thank you! Enjoy your parking. Have a great day!', false);
+            
+            // Clear the current booking after 2 seconds
+            setTimeout(() => {
+                currentBooking = null;
+                localStorage.removeItem('currentBooking');
+                backToDashboard();
+            }, 2000);
+        }
+
+        function backToDashboard() {
+            if (timerInterval) clearInterval(timerInterval);
+            if (entryCheckInterval) clearInterval(entryCheckInterval);
+            
+            // Reset button visibility
+            document.getElementById('waitingButtons').classList.remove('hidden');
+            document.getElementById('enteredButtons').classList.add('hidden');
+            
+            document.getElementById('qrScreen').classList.add('hidden');
+            document.getElementById('bookingScreen').classList.add('hidden');
+            document.getElementById('dashboardScreen').classList.remove('hidden');
+            document.getElementById('availabilityCard').classList.remove('hidden');
+            loadAvailability();
+        }
+
+        function logout() {
+            if (timerInterval) clearInterval(timerInterval);
+            if (entryCheckInterval) clearInterval(entryCheckInterval);
+            
+            // Clear all stored data
+            token = null;
+            currentUser = null;
+            currentBooking = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentBooking');
+            
+            // Hide all screens except login
+            document.getElementById('dashboardScreen').classList.add('hidden');
+            document.getElementById('availabilityCard').classList.add('hidden');
+            document.getElementById('qrScreen').classList.add('hidden');
+            document.getElementById('bookingScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+    </script>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

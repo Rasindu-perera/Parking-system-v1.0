@@ -1,0 +1,66 @@
+{
+  "plc": {
+    "protocol": "modbus_tcp",
+    "host": "192.168.1.110",
+    "port": 502,
+    "unit_id": 1,
+    "timeout": 3,
+    "retry_attempts": 3,
+    "enabled": false,
+    "comment": "Set enabled to true when PLC hardware is connected"
+  },
+  "gates": {
+    "entry": {
+      "name": "Entry Gate (Gate 1)",
+      "open_address": 0,
+      "close_address": 2,
+      "open_status_address": 10,
+      "closed_status_address": 12,
+      "vehicle_sensor_address": 14,
+      "traffic_light_address": 20,
+      "timeout_seconds": 15,
+      "auto_close_delay": 5
+    },
+    "exit": {
+      "name": "Exit Gate (Gate 2)",
+      "open_address": 1,
+      "close_address": 3,
+      "open_status_address": 11,
+      "closed_status_address": 13,
+      "vehicle_sensor_address": 15,
+      "traffic_light_address": 21,
+      "timeout_seconds": 15,
+      "auto_close_delay": 5
+    }
+  },
+  "safety": {
+    "obstacle_detection_enabled": true,
+    "emergency_stop_enabled": true,
+    "max_open_time_seconds": 30,
+    "heartbeat_interval_seconds": 5
+  },
+  "cameras": {
+    "camera1": {
+      "name": "Entry Camera",
+      "rtsp_url": "rtsp://admin:password@192.168.1.101:554/stream",
+      "type": "entry",
+      "enabled": true,
+      "resolution": "1920x1080",
+      "fps": 15
+    },
+    "camera2": {
+      "name": "Exit Camera",
+      "rtsp_url": "rtsp://admin:password@192.168.1.102:554/stream",
+      "type": "exit",
+      "enabled": true,
+      "resolution": "1920x1080",
+      "fps": 15
+    }
+  },
+  "network": {
+    "server_ip": "192.168.1.100",
+    "gateway": "192.168.1.1",
+    "subnet_mask": "255.255.255.0",
+    "dns": "8.8.8.8"
+  }
+}
